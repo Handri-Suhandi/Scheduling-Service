@@ -1,7 +1,6 @@
 const {failure} = require("../common/response");
 const {verify} = require("./verifying");
 const {getPartnerPublicKey} = require("./partners");
-const { raw } = require("express");
 
 const MAX_DRIFT_MS = 5 * 60 * 1000;
 
@@ -20,7 +19,7 @@ function signatureMiddleware(req, res, next) {
 
     const publicKey = getPartnerPublicKey(partner);
     if(!publicKey) {
-        return reject(res, "Unknow partner");
+        return reject(res, "Unknown partner");
     }
 
     const drift = Math.abs(Date.now() - Number(timestamp));

@@ -1,9 +1,11 @@
 const express = require("express");
 const  {success, failure} = require("./common/response");
+const {signatureMiddleware} = require("./security/middleware");
 
 const app = express();
 
-app.use(express.json());
+app.use(express.text({type:"*/*"}));
+app.use("/api/v1", signatureMiddleware);
 
 app.post("/api/v1/ping", (req, res)=>{
     res.status(200).json(success({message: "pong"}))
