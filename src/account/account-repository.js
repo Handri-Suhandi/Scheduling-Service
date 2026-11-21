@@ -1,15 +1,11 @@
 const {pool} = require("../db/connection");
 
-async function findByPartnerUser(partner, partnerUserId){
+async function findByPartnerUserId(partnerUserId){
     const [rows] = await pool.query(
-        "SELECT * FROM account WHERE partner = ? AND partner_user_id = ?",
-        [partner, partnerUserId]
+        "SELECT partner, partner_user_id, token, status FROM account WHERE partner_user_id = ? LIMIT 1",
+        [partnerUserId]
     );
-    if(rows.length > 0){
-        return rows[0];
-    } else {
-        return null;
-    }
+    return rows[0];
 }
 
-module.exports = {findByPartnerUser};
+module.exports = {findByPartnerUserId};

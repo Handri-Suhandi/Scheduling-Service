@@ -1,7 +1,13 @@
+const result = require("dotenv").config()
+if(result.error){
+    throw result.error;
+}
+
 const express = require("express");
 const  {success, failure} = require("./common/response");
 const {signatureMiddleware} = require("./security/middleware");
 const {accountInfo} = require("./account/account-controller");
+const {pool} = require("./db/connection");
 
 const app = express();
 
@@ -26,3 +32,12 @@ const port = 3000;
 app.listen(port, () => {
     console.log(`Scheduling Service listening on port ${port}`);
 });
+
+function shutdown() {
+    server.close(async() => {
+        await pool.end();
+        process.exit(0);
+    });
+}
+process.on("SIGTERM", shutdown);
+process.on("SIGINT", shutdown);

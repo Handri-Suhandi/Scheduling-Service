@@ -8,11 +8,7 @@ const partnerKeys = {
 };
 
 function getPartnerPublicKey(partnerId) {
-    if(Object.hasOwn(partnerKeys, partnerId)){
-        return partnerKeys[partnerId];
-    } else {
-        return null;
-    }
+    return Object.hasOwn(partnerKeys, partnerId) ? partnerKeys[partnerId] : null;
 }
 
 module.exports = {getPartnerPublicKey};
