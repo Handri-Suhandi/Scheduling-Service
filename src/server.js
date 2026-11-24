@@ -5,9 +5,10 @@ if(result.error){
 
 const express = require("express");
 const  {success, failure} = require("./common/response");
-const {signatureMiddleware} = require("./security/middleware");
+const {signatureMiddleware, skipVerification} = require("./security/middleware");
 const {accountInfo} = require("./account/account-controller");
 const {pool} = require("./db/connection");
+const {loadPartnerKeys} = require("./security/partners");
 
 const app = express();
 
@@ -28,16 +29,24 @@ app.use((err, req, res, next) => {
     res.status(200).json(failure("INTERNAL_SERVER_ERROR", "Internal Server Error"));
 });
 
-const port = 3000;
-app.listen(port, () => {
-    console.log(`Scheduling Service listening on port ${port}`);
-});
+async function main(){
+    if(!skipVerification){
+        await loadPartnerKeys();
+    }
 
-function shutdown() {
-    server.close(async() => {
-        await pool.end();
-        process.exit(0);
+    const port = 3000;
+    const server = app.listen(port, () => {
+        console.log(`Scheduling Service listening on port ${port}`);
     });
+
+    function shutdown() {
+        server.close(async() => {
+            await pool.end();
+            process.exit(0);
+        });
+    }
+    process.on("SIGTERM", shutdown);
+    process.on("SIGINT", shutdown);
 }
-process.on("SIGTERM", shutdown);
-process.on("SIGINT", shutdown);
+
+main();
