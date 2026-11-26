@@ -6,7 +6,7 @@ if(result.error){
 const express = require("express");
 const  {success, failure} = require("./common/response");
 const {signatureMiddleware, skipVerification} = require("./security/middleware");
-const {accountInfo} = require("./account/account-controller");
+const {accountInfo, accountBind} = require("./account/account-controller");
 const {pool} = require("./db/connection");
 const {loadPartnerKeys} = require("./security/partners");
 
@@ -20,6 +20,7 @@ app.post("/api/v1/ping", (req, res)=>{
 });
 
 app.post("/api/v1/account/info", accountInfo);
+app.post("/api/v1/account/bind", accountBind);
 
 app.use((err, req, res, next) => {
     if(err instanceof SyntaxError){

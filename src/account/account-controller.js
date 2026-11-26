@@ -46,4 +46,20 @@ async function accountInfo(req, res){
 
 }
 
-module.exports = {accountInfo};
+async function accountBind(req, res){
+    const {partnerUserId, registrationData} = req.body ?? {};
+    const {email, token} = registrationData ?? {};
+
+    if(!isNonBlank(partnerUserId) || !isNonBlank(email) || !isNonBlank(token)){
+        return badRequest(res);
+    }
+
+    await repository.insertAccount(req.partner, partnerUserId, email, token);
+    const account = await repository.findByPartnerUserId(partnerUserId);
+    if(account.partner !== req.partner){
+        return badRequest(res)
+    }
+    return res.status(200).json(success({token: account.token, status: "ENABLED"}));
+}
+
+module.exports = {accountInfo, accountBind};

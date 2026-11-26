@@ -8,4 +8,11 @@ async function findByPartnerUserId(partnerUserId){
     return rows[0];
 }
 
-module.exports = {findByPartnerUserId};
+async function insertAccount(partner, partner_user_id, email, token){
+    await pool.query(
+        "INSERT INTO account (partner, partner_user_id, email, token) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE partner_user_id = partner_user_id",
+        [partner, partner_user_id, email, token]
+    );
+}
+
+module.exports = {findByPartnerUserId, insertAccount};
